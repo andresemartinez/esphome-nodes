@@ -1,0 +1,55 @@
+esphome:
+  name: "Home Voltage Sensor"
+  # includes:
+  # - power_sensor.h
+  # - EmonLib.h
+  # - EmonLib.cpp
+
+esp8266:
+  board: esp01_1m
+
+logger:
+
+api:
+
+ota:
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+# v1
+# sensor:
+# - platform: custom
+#   lambda: |-
+#     auto power_sensor = new PowerSensor();
+#     App.register_component(power_sensor);
+#     return {power_sensor->vrms_sensor};
+
+#   sensors:
+#   - name: "voltage"
+#     unit_of_measurement: V
+#     accuracy_decimals: 2
+
+# v2
+sensor:
+  - platform: adc
+    pin: A0
+    name: "Home Voltage Sensor"
+    update_interval: 20ms # 50 times per second
+    filters:
+      - offset: -1.65 # sensor vcc / 2
+      - lambda: return x * x;
+      - throttle_average: 1s
+      - lambda: return sqrt(x);
+      - multiply: 2315 # calibration value
+      - or: # send values every 10 seconds or when there is a 2v delta
+          - throttle: 10m
+          - delta: 2.0
+
+    # HA metadata
+    unit_of_measurement: "V"
+    icon: "mdi:current-ac"
+    device_class: "voltage"
+    state_class: "measurement"
+    accuracy_decimals: 2
