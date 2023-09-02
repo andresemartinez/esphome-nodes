@@ -21,13 +21,17 @@ To calibrate the ZMPT101B module you can use the Arduino IDE to load the followi
 
 ```c++
 void setup() {
-    Serial.begin(115200);
-    pinMode(A0, INPUT);
+  Serial.begin(115200);
+  pinMode(A0, INPUT);
 }
 
 void loop() {
-    Serial.println(analogRead(A0));
+  Serial.println(analogRead(A0));
 }
 ```
 
 Once running use the Serial Plotter (tools -> Serial Plotter) to see the curve, if the curve is clipping use the potentiometer to fix it.
+
+## Readings calibration
+
+To calibrate the voltage reported by the sensor disable the _throttle_ and _debounce_ filters and use the _calibrate_linear_ filter to map the adc reported value to the actual voltage.
